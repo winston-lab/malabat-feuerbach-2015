@@ -1,3 +1,5 @@
 .snakemake/
 data/
 reformatted/
+*.tsv.gz
+*.svg
