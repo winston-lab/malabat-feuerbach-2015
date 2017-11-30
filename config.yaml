@@ -1,3 +1,6 @@
+chrsizes: ../../genome/S_cerevisiae.R64-2-1.chrsizes.tsv
+
+
 samples:
     doris-1:
         path: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bedgraph
@@ -6,20 +9,20 @@ samples:
         path: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bedgraph
         group: SD
     malabat-1:
-        path: data/GSM1565066_L5p_01.WT.wig.gz
+        path: data/GSM1565066_L5p_01.WT.wig
         group: CM
     malabat-2:
-        path: data/GSM1565070_L5p_02.WT.wig.gz
+        path: data/GSM1565070_L5p_02.WT.wig
         group: CM
     malabat-3:
-        path: data/GSM1565074_L5p_03.WT.wig.gz
+        path: data/GSM1565074_L5p_03.WT.wig
         group: CM
     malabat-4:
-        path: data/GSM1565078_L5p_04.WT.wig.gz
+        path: data/GSM1565078_L5p_04.WT.wig
         group: CM
     malabat-5:
-        path: data/GSM1565082_L5p_05.WT.wig.gz
+        path: data/GSM1565082_L5p_05.WT.wig
         group: CM
     malabat-6:
-        path: data/GSM1565086_L5p_06.WT.wig.gz
+        path: data/GSM1565086_L5p_06.WT.wig
         group: CM
