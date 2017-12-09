@@ -1,0 +1,32 @@
+__default__:
+    queue : "short"
+    time : 60 
+    n : 1
+    mem : 2000
+    name : "{rule}.{wildcards}"
+    log : "logs/cluster/{rule}.{wildcards}.log"
+    err : "logs/cluster/{rule}.{wildcards}.err"
+
+map_to_windows:
+    time: 45
+    mem: 4000 
+
+join_window_counts:
+    time: 30
+    mem: 4000
+
+plotcorrelations:
+    time: 20
+    mem: 10000
+
+deeptools_matrix:
+    time: 20
+    mem: 4000
+
+melt_matrix:
+    time: 10
+    mem: 2000
+
+plot_meta:
+    time: 15
+    mem: 10000

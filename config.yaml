@@ -1,28 +1,55 @@
 chrsizes: ../../genome/S_cerevisiae.R64-2-1.chrsizes.tsv
 
-
 samples:
     doris-1:
         path: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bedgraph
-        group: SD
+        group: doris 
+        bw: ../../tss-seq/coverage/libsizenorm/bw/YPD-1-tss-libsizenorm-SENSE.bw
     doris-2:
         path: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bedgraph
-        group: SD
+        group: doris 
+        bw: ../../tss-seq/coverage/libsizenorm/bw/YPD-2-tss-libsizenorm-SENSE.bw
     malabat-1:
         path: data/GSM1565066_L5p_01.WT.wig
-        group: CM
+        group: malabat 
     malabat-2:
         path: data/GSM1565070_L5p_02.WT.wig
-        group: CM
+        group: malabat 
     malabat-3:
         path: data/GSM1565074_L5p_03.WT.wig
-        group: CM
+        group: malabat 
     malabat-4:
         path: data/GSM1565078_L5p_04.WT.wig
-        group: CM
+        group: malabat 
     malabat-5:
         path: data/GSM1565082_L5p_05.WT.wig
-        group: CM
+        group: malabat 
     malabat-6:
         path: data/GSM1565086_L5p_06.WT.wig
-        group: CM
+        group: malabat 
+
+annotations:
+    verified-transcripts:
+        path : ../../genome/annotations/Scer_transcripts_w_verifiedORFs.bed
+        binsize : 10 
+        binstat : "max" # OPTIONS: mean, median, min, max, sum, std
+        scaled-length: 2000
+        upstream : 500
+        dnstream : 500 
+        # unscaled-5p : 30
+        sort : "ascend" # OPTIONS: descend, ascend, no, keep
+        sortby : "region_length"
+        # pct_cutoff : .994 # do not plot data above this percentile in heatmaps
+        # heatmap_colormap : "inferno"  # OPTIONS: viridis, inferno, magma, plasma
+        # refpointlabel : "TSS" # label for reference point
+        # ylabel : "coding genes"      # y-axis label (for regions represented in the BED file)
+
+threads: 2
+
+corr-windowsizes:
+    - 1
+    - 5
+    - 10
+    - 15
+    - 20
+    - 25

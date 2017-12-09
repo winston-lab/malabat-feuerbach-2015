@@ -1,5 +1,13 @@
 .snakemake/
-data/
+data/*
+!data/.gitkeep
 reformatted/
 *.tsv.gz
 *.svg
+snakemake.err
+snakemake.log
+logs/*
+logs/cluster/*
+!logs/.gitkeep
+!logs/cluster/
+!logs/cluster/.gitkeep
