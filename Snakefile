@@ -119,8 +119,8 @@ rule deeptools_matrix:
         matrix = temp("figures/{annotation}/{annotation}-{sample}-SENSE.tsv"),
     params:
         scaled_length = lambda wildcards: config["annotations"][wildcards.annotation]["scaled-length"],
-        upstream = lambda wildcards: config["annotations"][wildcards.annotation]["upstream"],
-        dnstream = lambda wildcards: config["annotations"][wildcards.annotation]["dnstream"],
+        upstream = lambda wildcards: config["annotations"][wildcards.annotation]["upstream"] + config["annotations"][wildcards.annotation]["binsize"],
+        dnstream = lambda wildcards: config["annotations"][wildcards.annotation]["dnstream"] + config["annotations"][wildcards.annotation]["binsize"],
         # unscaled_5p = lambda wildcards: config["annotations"][wildcards.annotation]["unscaled-5p"],
         binsize = lambda wildcards: config["annotations"][wildcards.annotation]["binsize"],
         sort = lambda wildcards: config["annotations"][wildcards.annotation]["sort"],

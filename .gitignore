@@ -2,6 +2,7 @@
 data/*
 !data/.gitkeep
 reformatted/
+figures/
 *.tsv.gz
 *.svg
 snakemake.err
