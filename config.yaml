@@ -4,11 +4,19 @@ samples:
     doris-1:
         path: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bedgraph
         group: doris 
-        bw: ../../tss-seq/coverage/libsizenorm/bw/YPD-1-tss-libsizenorm-SENSE.bw
+        bw: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bw
     doris-2:
         path: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bedgraph
         group: doris 
-        bw: ../../tss-seq/coverage/libsizenorm/bw/YPD-2-tss-libsizenorm-SENSE.bw
+        bw: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bw
+    viktorovskaya-1:
+        path: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1-tss-libsizenorm-SENSE.bedgraph
+        group: viktorovskaya 
+        bw: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1-tss-libsizenorm-SENSE.bw
+    viktorovskaya-2:
+        path: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2-tss-libsizenorm-SENSE.bedgraph
+        group: viktorovskaya 
+        bw: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2-tss-libsizenorm-SENSE.bw
     malabat-1:
         path: data/GSM1565066_L5p_01.WT.wig
         group: malabat 
@@ -42,7 +50,7 @@ annotations:
         # pct_cutoff : .994 # do not plot data above this percentile in heatmaps
         # heatmap_colormap : "inferno"  # OPTIONS: viridis, inferno, magma, plasma
         # refpointlabel : "TSS" # label for reference point
-        # ylabel : "coding genes"      # y-axis label (for regions represented in the BED file)
+        ylabel : "coding genes"      # y-axis label (for regions represented in the BED file)
 
 threads: 2
 

@@ -3,7 +3,7 @@
 configfile: "config.yaml"
 
 CMSAMPLES = {k:v for (k,v) in config["samples"].items() if v["group"]=="malabat"}
-SDSAMPLES = {k:v for (k,v) in config["samples"].items() if v["group"]=="doris"}
+SDSAMPLES = {k:v for (k,v) in config["samples"].items() if v["group"] in ["doris","viktorovskaya"]}
 
 localrules: wig_split_strands, wig_to_bigwig, bigwig_to_bedgraph,
     make_stranded_bedgraph, stranded_bedgraph_to_bigwig, make_stranded_annotations, gzip_deeptools_matrix, cat_matrices
@@ -12,12 +12,10 @@ rule all:
     input:
         # expand("reformatted/{sample}-{strand}.{fmt}", sample=CMSAMPLES, strand=["plus","minus"], fmt=["wig", "bw", "bedgraph"]),
         # expand("reformatted/{sample}-SENSE.{fmt}", sample=CMSAMPLES, fmt=["bedgraph", "bw"]),
-        # "figures/correlation/union-bedgraph-allsamples.tsv.gz",
-        # "figures/correlation/tss-doris-v-malabat-tss-correlations.svg",
-        expand("figures/correlation/tss-doris-v-malabat-window-{windowsize}-tss-correlations.svg", windowsize=config["corr-windowsizes"]),
+        expand("figures/correlation/tss-seq-v-malabat-window-{windowsize}-tss-correlations.svg", windowsize=config["corr-windowsizes"]),
         # expand("figures/{annotation}/{annotation}-{sample}-SENSE-melted.tsv.gz", annotation=config["annotations"], sample=config["samples"]),
         # expand("figures/{annotation}/allsamples-{annotation}-SENSE.tsv.gz", annotation=config["annotations"]),
-        expand("figures/{annotation}/{annotation}-tss-doris-v-malabat.svg", annotation=config["annotations"])
+        expand("figures/{annotation}/{annotation}-tss-seq-v-malabat.svg", annotation=config["annotations"])
 
 rule wig_split_strands:
     input:
@@ -83,7 +81,7 @@ rule plotcorrelations:
     input:
         "figures/correlation/union-bedgraph-window-{windowsize}-allsamples.tsv.gz"
     output:
-        "figures/correlation/tss-doris-v-malabat-window-{windowsize}-tss-correlations.svg"
+        "figures/correlation/tss-seq-v-malabat-window-{windowsize}-tss-correlations.svg"
     params:
         pcount = 0.1,
         samplelist = list(SDSAMPLES.keys()) + list(CMSAMPLES.keys())
@@ -104,7 +102,7 @@ rule make_stranded_annotations:
     input:
         lambda wildcards : config["annotations"][wildcards.annotation]["path"]
     output:
-        "../../genome/annotations/stranded/{annotation}-STRANDED.bed"
+        "{annopath}/stranded/{annotation}-STRANDED.{ext}"
     log : "logs/make_stranded_annotations/make_stranded_annotations-{annotation}.log"
     shell: """
         (bash scripts/makeStrandedBed.sh {input} > {output}) &> {log}
@@ -112,11 +110,12 @@ rule make_stranded_annotations:
 
 rule deeptools_matrix:
     input:
-        annotation = "../../genome/annotations/stranded/{annotation}-STRANDED.bed",
+        annotation = lambda wildcards: os.path.dirname(config["annotations"][wildcards.annotation]["path"]) + "/stranded/" + wildcards.annotation + "-STRANDED" + os.path.splitext(config["annotations"][wildcards.annotation]["path"])[1],
         bw = lambda wildcards: "reformatted/" + wildcards.sample + "-SENSE.bw" if config["samples"][wildcards.sample]["group"]=="malabat" else config["samples"][wildcards.sample]["bw"]
     output:
         dtfile = temp("figures/{annotation}/{annotation}-{sample}-SENSE.mat"),
         matrix = temp("figures/{annotation}/{annotation}-{sample}-SENSE.tsv"),
+        matrix_gz = "figures/{annotation}/{annotation}-{sample}-SENSE.tsv.gz",
     params:
         scaled_length = lambda wildcards: config["annotations"][wildcards.annotation]["scaled-length"],
         upstream = lambda wildcards: config["annotations"][wildcards.annotation]["upstream"] + config["annotations"][wildcards.annotation]["binsize"],
@@ -129,16 +128,7 @@ rule deeptools_matrix:
     threads : config["threads"]
     log: "logs/deeptools/computeMatrix-{annotation}-{sample}.log"
     shell: """
-        (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}) &> {log}
-        """
-
-rule gzip_deeptools_matrix:
-    input:
-        matrix = "figures/{annotation}/{annotation}-{sample}-SENSE.tsv",
-    output:
-        "figures/{annotation}/{annotation}-{sample}-SENSE.tsv.gz",
-    shell: """
-        pigz -f {input}
+        (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}; pigz -f {output.matrix}) &> {log}
         """
 
 rule melt_matrix:
@@ -167,8 +157,8 @@ rule plot_meta:
     input:
         "figures/{annotation}/allsamples-{annotation}-SENSE.tsv.gz"
     params:
-        trim_pct = 0.1,
+        trim_pct = 0.01,
         scaled_length = lambda wildcards: config["annotations"][wildcards.annotation]["scaled-length"],
     output:
-        "figures/{annotation}/{annotation}-tss-doris-v-malabat.svg"
+        "figures/{annotation}/{annotation}-tss-seq-v-malabat.svg"
     script: "scripts/tss_metagene.R"
