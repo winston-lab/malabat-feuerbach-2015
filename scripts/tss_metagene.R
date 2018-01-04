@@ -4,7 +4,7 @@ library(forcats)
 library(ggforce)
 library(ggthemes)
 
-main = function(intable, trim_pct, downstream, ylabel, outpath){
+main = function(intable, trim_pct, refsize, ylabel, outpath){
     df = read_tsv(intable, col_names=c("group", "sample", "index", "position", "cpm")) %>% 
         mutate_at(vars(group), funs(fct_inorder(., ordered=TRUE)))
     nindices = max(df$index)

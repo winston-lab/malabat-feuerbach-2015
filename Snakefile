@@ -128,7 +128,7 @@ rule deeptools_matrix:
     threads : config["threads"]
     log: "logs/deeptools/computeMatrix-{annotation}-{sample}.log"
     shell: """
-        (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}; pigz -f {output.matrix}) &> {log}
+        (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}; pigz -fk {output.matrix}) &> {log}
         """
 
 rule melt_matrix:
@@ -159,6 +159,7 @@ rule plot_meta:
     params:
         trim_pct = 0.01,
         scaled_length = lambda wildcards: config["annotations"][wildcards.annotation]["scaled-length"],
+        ylabel = lambda wildcards: config["annotations"][wildcards.annotation]["ylabel"],
     output:
         "figures/{annotation}/{annotation}-tss-seq-v-malabat.svg"
     script: "scripts/tss_metagene.R"
