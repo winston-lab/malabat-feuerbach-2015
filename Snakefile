@@ -5,8 +5,12 @@ configfile: "config.yaml"
 CMSAMPLES = {k:v for (k,v) in config["samples"].items() if v["group"]=="malabat"}
 SDSAMPLES = {k:v for (k,v) in config["samples"].items() if v["group"] in ["doris","viktorovskaya"]}
 
+onsuccess:
+    shell("(./mogrify.sh) > mogrify.log")
+
+
 localrules: wig_split_strands, wig_to_bigwig, bigwig_to_bedgraph,
-    make_stranded_bedgraph, stranded_bedgraph_to_bigwig, make_stranded_annotations, gzip_deeptools_matrix, cat_matrices
+    make_stranded_bedgraph, stranded_bedgraph_to_bigwig, make_stranded_annotations, cat_matrices
 
 rule all:
     input:
@@ -30,11 +34,11 @@ rule wig_split_strands:
 rule wig_to_bigwig:
     input:
         wig = "reformatted/{sample}-{strand}.wig",
-        chrsizes = config["chrsizes"]
+        fasta = config["fasta"]
     output:
         bw = "reformatted/{sample}-{strand,plus|minus}.bw"
     shell: """
-        wigToBigWig <(sed 's/chrmt/chrM/g' {input.wig}) {input.chrsizes} {output.bw}
+        wigToBigWig <(sed 's/chrmt/chrM/g' {input.wig}) <(faidx {input.fasta} -i chromsizes) {output.bw}
         """
 
 rule bigwig_to_bedgraph:
@@ -59,11 +63,11 @@ rule make_stranded_bedgraph:
 rule map_to_windows:
     input:
         bg = lambda wildcards: SDSAMPLES[wildcards.sample]["path"] if wildcards.sample in SDSAMPLES else "reformatted/" + wildcards.sample + "-SENSE.bedgraph",
-        chrsizes = config["chrsizes"]
+        fasta = config["fasta"]
     output:
         exp = temp("reformatted/{sample}-window-{windowsize}-coverage.bedgraph"),
     shell: """
-        bedtools makewindows -g <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' {input.chrsizes}) -w {wildcards.windowsize} | LC_COLLATE=C sort -k1,1 -k2,2n | bedtools map -a stdin -b {input.bg} -c 4 -o sum | awk 'BEGIN{{FS=OFS="\t"}}$4=="."{{$4=0}}{{print $0}}' > {output.exp}
+        bedtools makewindows -g <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' <(faidx {input.fasta} -i chromsizes)) -w {wildcards.windowsize} | LC_COLLATE=C sort -k1,1 -k2,2n | bedtools map -a stdin -b {input.bg} -c 4 -o sum | awk 'BEGIN{{FS=OFS="\t"}}$4=="."{{$4=0}}{{print $0}}' > {output.exp}
         """
 
 rule join_window_counts:
@@ -85,37 +89,38 @@ rule plotcorrelations:
     params:
         pcount = 0.1,
         samplelist = list(SDSAMPLES.keys()) + list(CMSAMPLES.keys())
+    conda: "envs/malabat15_tidyverse.yaml"
     script:
         "scripts/plotcorr.R"
 
 rule stranded_bedgraph_to_bigwig:
     input:
         bg = "reformatted/{sample}-SENSE.bedgraph",
-        chrsizes = config["chrsizes"]
+        fasta = config["fasta"]
     output:
         "reformatted/{sample}-SENSE.bw"
     shell: """
-        bedGraphToBigWig {input.bg} <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' {input.chrsizes}) {output}
+        bedGraphToBigWig {input.bg} <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' <(faidx {input.fasta} -i chromsizes)) {output}
         """
 
 rule make_stranded_annotations:
     input:
         lambda wildcards : config["annotations"][wildcards.annotation]["path"]
     output:
-        "{annopath}/stranded/{annotation}-STRANDED.{ext}"
+        "annotations/{annotation}.bed"
     log : "logs/make_stranded_annotations/make_stranded_annotations-{annotation}.log"
     shell: """
-        (bash scripts/makeStrandedBed.sh {input} > {output}) &> {log}
+        (cut -f1-6 | bash scripts/makeStrandedBed.sh {input} > {output}) &> {log}
         """
 
 rule deeptools_matrix:
     input:
-        annotation = lambda wildcards: os.path.dirname(config["annotations"][wildcards.annotation]["path"]) + "/stranded/" + wildcards.annotation + "-STRANDED" + os.path.splitext(config["annotations"][wildcards.annotation]["path"])[1],
+        annotation = "annotations/{annotation}.bed",
         bw = lambda wildcards: "reformatted/" + wildcards.sample + "-SENSE.bw" if config["samples"][wildcards.sample]["group"]=="malabat" else config["samples"][wildcards.sample]["bw"]
     output:
-        dtfile = temp("figures/{annotation}/{annotation}-{sample}-SENSE.mat"),
-        matrix = temp("figures/{annotation}/{annotation}-{sample}-SENSE.tsv"),
-        matrix_gz = "figures/{annotation}/{annotation}-{sample}-SENSE.tsv.gz",
+        dtfile = temp("figures/{annotation}/{annotation}_{sample}-SENSE.mat"),
+        matrix = temp("figures/{annotation}/{annotation}_{sample}-SENSE.tsv"),
+        matrix_gz = "figures/{annotation}/{annotation}_{sample}-SENSE.tsv.gz",
     params:
         scaled_length = lambda wildcards: config["annotations"][wildcards.annotation]["scaled-length"],
         upstream = lambda wildcards: config["annotations"][wildcards.annotation]["upstream"] + config["annotations"][wildcards.annotation]["binsize"],
@@ -126,26 +131,27 @@ rule deeptools_matrix:
         sortusing = lambda wildcards: config["annotations"][wildcards.annotation]["sortby"],
         binstat = lambda wildcards: config["annotations"][wildcards.annotation]["binstat"]
     threads : config["threads"]
-    log: "logs/deeptools/computeMatrix-{annotation}-{sample}.log"
+    log: "logs/deeptools/computeMatrix-{annotation}_{sample}.log"
     shell: """
         (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}; pigz -fk {output.matrix}) &> {log}
         """
 
 rule melt_matrix:
     input:
-        matrix = "figures/{annotation}/{annotation}-{sample}-SENSE.tsv.gz",
+        matrix = "figures/{annotation}/{annotation}_{sample}-SENSE.tsv.gz",
     output:
-        temp("figures/{annotation}/{annotation}-{sample}-SENSE-melted.tsv.gz")
+        temp("figures/{annotation}/{annotation}_{sample}-SENSE-melted.tsv.gz")
     params:
         group = lambda wildcards : config["samples"][wildcards.sample]["group"],
         binsize = lambda wildcards : config["annotations"][wildcards.annotation]["binsize"],
         upstream = lambda wildcards : config["annotations"][wildcards.annotation]["upstream"],
+    conda: "envs/malabat15_tidyverse.yaml"
     script:
         "scripts/melt_matrix.R"
 
 rule cat_matrices:
     input:
-        expand("figures/{{annotation}}/{{annotation}}-{sample}-SENSE-melted.tsv.gz", sample=config["samples"])
+        expand("figures/{{annotation}}/{{annotation}}_{sample}-SENSE-melted.tsv.gz", sample=config["samples"])
     output:
         "figures/{annotation}/allsamples-{annotation}-SENSE.tsv.gz"
     log: "logs/cat_matrices/cat_matrices-{annotation}.log"
@@ -162,4 +168,6 @@ rule plot_meta:
         ylabel = lambda wildcards: config["annotations"][wildcards.annotation]["ylabel"],
     output:
         "figures/{annotation}/{annotation}-tss-seq-v-malabat.svg"
+    conda: "envs/malabat15_tidyverse.yaml"
     script: "scripts/tss_metagene.R"
+

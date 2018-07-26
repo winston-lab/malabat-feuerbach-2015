@@ -5,15 +5,15 @@ library(ggforce)
 library(ggthemes)
 
 main = function(intable, trim_pct, refsize, ylabel, outpath){
-    df = read_tsv(intable, col_names=c("group", "sample", "index", "position", "cpm")) %>% 
+    df = read_tsv(intable, col_names=c("group", "sample", "index", "position", "cpm")) %>%
         mutate_at(vars(group), funs(fct_inorder(., ordered=TRUE)))
     nindices = max(df$index)
     df = df %>% group_by(group, sample, position) %>%
-        summarise(trim_mean = winsor.mean(cpm, trim=trim_pct)) %>% 
+        summarise(trim_mean = winsor.mean(cpm, trim=trim_pct)) %>%
         group_by(group, sample) %>%
         mutate_at(vars(trim_mean), funs(./max(trim_mean))) %>%
         ungroup()
-    
+
     meta = ggplot(data = df, aes(x=position, y=trim_mean, group=sample, color=group)) +
             geom_vline(xintercept = 0, color="grey70") +
             geom_vline(xintercept = refsize/1000, color="grey70") +
@@ -38,7 +38,7 @@ main = function(intable, trim_pct, refsize, ylabel, outpath){
                   legend.title = element_blank(),
                   legend.text = element_text(size=12),
                   plot.subtitle = element_text(face="plain"))
-                  
+
     ggsave(outpath, meta, width=16, height=12, units="cm")
 }
 

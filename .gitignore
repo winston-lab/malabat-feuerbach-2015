@@ -12,3 +12,5 @@ logs/cluster/*
 !logs/.gitkeep
 !logs/cluster/
 !logs/cluster/.gitkeep
+Rplots.pdf
+annotations/

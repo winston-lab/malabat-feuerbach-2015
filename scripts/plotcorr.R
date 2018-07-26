@@ -15,7 +15,7 @@ main = function(intable, binsize, pcount, samplelist, outpath){
     maxsignal = max(df) + pcount
     mincor = min(cor(df, use="complete.obs")) * .99
     plots = list()
-    
+
     #for each row
     for (i in 1:ncol(df)){
         #for each column
@@ -39,8 +39,8 @@ main = function(intable, binsize, pcount, samplelist, outpath){
                         geom_density(aes(y=..scaled..), fill="black", size=1) +
                         scale_y_continuous(breaks=c(0,.5,1)) +
                         scale_x_log10(limit = c(pcount, maxsignal)) +
-                        annotate("text", x=.90*maxsignal, y=0.5, hjust=1, 
-                                 label=unique(subdf$sample), size=4, fontface="bold") 
+                        annotate("text", x=.90*maxsignal, y=0.5, hjust=1,
+                                 label=unique(subdf$sample), size=4, fontface="bold")
                 plots[[idx]] = plot
             }
             #bottom left (scatter)
@@ -61,7 +61,7 @@ main = function(intable, binsize, pcount, samplelist, outpath){
             }
         }
     }
-    
+
     mat = ggmatrix(plots, nrow=ncol(df), ncol=ncol(df),
                    title = paste0("TSS-seq signal, ", binsize, "nt bins" ),
                    xAxisLabels = names(df), yAxisLabels = names(df), switch="both") +
@@ -78,7 +78,7 @@ main = function(intable, binsize, pcount, samplelist, outpath){
     h = 9/16*w+0.5
     ggsave(outpath, mat, width=w, height=h, units="cm")
     print(warnings())
-}    
+}
 
 main(intable = snakemake@input[[1]],
      binsize = snakemake@wildcards[["windowsize"]],

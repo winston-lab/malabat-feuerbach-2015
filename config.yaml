@@ -1,49 +1,49 @@
-chrsizes: ../../genome/S_cerevisiae.R64-2-1.chrsizes.tsv
+fasta: ../../genome/S_cerevisiae.R64-2-1.fa
 
 samples:
     doris-1:
-        path: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bedgraph
-        group: doris 
-        bw: ../../tss-seq/coverage/libsizenorm/YPD-1-tss-libsizenorm-SENSE.bw
+        path: ../../tss-seq/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bedgraph
+        group: doris
+        bw: ../../tss-seq/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bw
     doris-2:
-        path: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bedgraph
-        group: doris 
-        bw: ../../tss-seq/coverage/libsizenorm/YPD-2-tss-libsizenorm-SENSE.bw
-    viktorovskaya-1:
-        path: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1-tss-libsizenorm-SENSE.bedgraph
-        group: viktorovskaya 
-        bw: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1-tss-libsizenorm-SENSE.bw
-    viktorovskaya-2:
-        path: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2-tss-libsizenorm-SENSE.bedgraph
-        group: viktorovskaya 
-        bw: ../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2-tss-libsizenorm-SENSE.bw
+        path: ../../tss-seq/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bedgraph
+        group: doris
+        bw: ../../tss-seq/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bw
+    # viktorovskaya-1:
+    #     path: ../../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1_tss-seq-libsizenorm-SENSE.bedgraph
+    #     group: viktorovskaya
+    #     bw: ../../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1_tss-seq-libsizenorm-SENSE.bw
+    # viktorovskaya-2:
+    #     path: ../../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2_tss-seq-libsizenorm-SENSE.bedgraph
+    #     group: viktorovskaya
+    #     bw: ../../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-2_tss-seq-libsizenorm-SENSE.bw
     malabat-1:
         path: data/GSM1565066_L5p_01.WT.wig
-        group: malabat 
+        group: malabat
     malabat-2:
         path: data/GSM1565070_L5p_02.WT.wig
-        group: malabat 
+        group: malabat
     malabat-3:
         path: data/GSM1565074_L5p_03.WT.wig
-        group: malabat 
+        group: malabat
     malabat-4:
         path: data/GSM1565078_L5p_04.WT.wig
-        group: malabat 
+        group: malabat
     malabat-5:
         path: data/GSM1565082_L5p_05.WT.wig
-        group: malabat 
+        group: malabat
     malabat-6:
         path: data/GSM1565086_L5p_06.WT.wig
-        group: malabat 
+        group: malabat
 
 annotations:
     verified-transcripts:
         path : ../../genome/annotations/Scer_transcripts_w_verifiedORFs.bed
-        binsize : 10 
+        binsize : 10
         binstat : "max" # OPTIONS: mean, median, min, max, sum, std
         scaled-length: 2000
         upstream : 500
-        dnstream : 500 
+        dnstream : 500
         # unscaled-5p : 30
         sort : "ascend" # OPTIONS: descend, ascend, no, keep
         sortby : "region_length"
@@ -58,6 +58,3 @@ corr-windowsizes:
     - 1
     - 5
     - 10
-    - 15
-    - 20
-    - 25

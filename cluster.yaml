@@ -1,6 +1,6 @@
 __default__:
     queue : "short"
-    time : 60 
+    time : 60
     n : 1
     mem : 2000
     name : "{rule}.{wildcards}"
@@ -9,7 +9,7 @@ __default__:
 
 map_to_windows:
     time: 45
-    mem: 4000 
+    mem: 4000
 
 join_window_counts:
     time: 30

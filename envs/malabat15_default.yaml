@@ -1,0 +1,23 @@
+name: malabat15_default
+channels:
+    - bioconda
+    - conda-forge
+    - https://repo.anaconda.com/pkgs/free/linux-64
+    - https://repo.anaconda.com/pkgs/free/noarch
+    - https://repo.anaconda.com/pkgs/pro/linux-64
+    - https://repo.anaconda.com/pkgs/pro/noarch
+    - nodefaults
+
+dependencies:
+    - snakemake=5.2.0
+    - gawk=4.2.1
+    - sed=4.4
+    - pigz=2.3.4
+    - ucsc-wigtobigwig=332
+    - pyfaidx=0.5.4.1
+    - ucsc-bigwigtobedgraph=332
+    - bedtools=2.27.1
+    - ucsc-bedgraphtobigwig=332
+    - deeptools=2.5.3
+    - svg2png=4.1.1
+
