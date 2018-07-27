@@ -27,6 +27,7 @@ rule wig_split_strands:
     output:
         plus = temp("reformatted/{sample}-plus.wig"),
         minus = temp("reformatted/{sample}-minus.wig")
+    conda: "envs/malabat15_default.yaml"
     shell: """
         awk 'BEGIN{{FS=OFS="\t"}} $1=="variableStep chrom=pombe_AB325691 span=1" {{exit}} $1~/^track/ {{print $0 > "{output.plus}"; print $0 > "{output.minus}"; next}} $1~/^variableStep/ {{print $0 > "{output.plus}"; print $0 > "{output.minus}"; next}} $2>=0 {{print $0 > "{output.plus}"}} $2<0 {{print $1, -$2 > "{output.minus}"}}' {input}
         """
@@ -37,6 +38,7 @@ rule wig_to_bigwig:
         fasta = config["fasta"]
     output:
         bw = "reformatted/{sample}-{strand,plus|minus}.bw"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         wigToBigWig <(sed 's/chrmt/chrM/g' {input.wig}) <(faidx {input.fasta} -i chromsizes) {output.bw}
         """
@@ -46,6 +48,7 @@ rule bigwig_to_bedgraph:
         bw = "reformatted/{sample}-{strand}.bw"
     output:
         bg = temp("reformatted/{sample}-{strand,plus|minus}.bedgraph")
+    conda: "envs/malabat15_default.yaml"
     shell: """
         bigWigToBedGraph {input.bw} {output.bg}
         """
@@ -56,6 +59,7 @@ rule make_stranded_bedgraph:
         minus = "reformatted/{sample}-minus.bedgraph",
     output:
         sense = "reformatted/{sample}-SENSE.bedgraph"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         bash scripts/makeStrandedBedgraph.sh {input.plus} {input.minus} > {output.sense}
         """
@@ -66,6 +70,7 @@ rule map_to_windows:
         fasta = config["fasta"]
     output:
         exp = temp("reformatted/{sample}-window-{windowsize}-coverage.bedgraph"),
+    conda: "envs/malabat15_default.yaml"
     shell: """
         bedtools makewindows -g <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' <(faidx {input.fasta} -i chromsizes)) -w {wildcards.windowsize} | LC_COLLATE=C sort -k1,1 -k2,2n | bedtools map -a stdin -b {input.bg} -c 4 -o sum | awk 'BEGIN{{FS=OFS="\t"}}$4=="."{{$4=0}}{{print $0}}' > {output.exp}
         """
@@ -77,6 +82,7 @@ rule join_window_counts:
         names = list(SDSAMPLES.keys()) + list(CMSAMPLES.keys())
     output:
         "figures/correlation/union-bedgraph-window-{windowsize}-allsamples.tsv.gz"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         bedtools unionbedg -i {input.coverage} -header -names {params.names} | bash scripts/cleanUnionbedg.sh | pigz > {output}
         """
@@ -99,6 +105,7 @@ rule stranded_bedgraph_to_bigwig:
         fasta = config["fasta"]
     output:
         "reformatted/{sample}-SENSE.bw"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         bedGraphToBigWig {input.bg} <(awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' <(faidx {input.fasta} -i chromsizes)) {output}
         """
@@ -109,6 +116,7 @@ rule make_stranded_annotations:
     output:
         "annotations/{annotation}.bed"
     log : "logs/make_stranded_annotations/make_stranded_annotations-{annotation}.log"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         (cut -f1-6 | bash scripts/makeStrandedBed.sh {input} > {output}) &> {log}
         """
@@ -132,6 +140,7 @@ rule deeptools_matrix:
         binstat = lambda wildcards: config["annotations"][wildcards.annotation]["binstat"]
     threads : config["threads"]
     log: "logs/deeptools/computeMatrix-{annotation}_{sample}.log"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         (computeMatrix scale-regions -R {input.annotation} -S {input.bw} -out {output.dtfile} --outFileNameMatrix {output.matrix} -m {params.scaled_length} -b {params.upstream} -a {params.dnstream} --binSize {params.binsize} --sortRegions {params.sort} --sortUsing {params.sortusing} --averageTypeBins {params.binstat} -p {threads}; pigz -fk {output.matrix}) &> {log}
         """
@@ -155,6 +164,7 @@ rule cat_matrices:
     output:
         "figures/{annotation}/allsamples-{annotation}-SENSE.tsv.gz"
     log: "logs/cat_matrices/cat_matrices-{annotation}.log"
+    conda: "envs/malabat15_default.yaml"
     shell: """
         (cat {input} > {output}) &> {log}
         """
