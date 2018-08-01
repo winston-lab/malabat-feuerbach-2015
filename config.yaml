@@ -2,13 +2,13 @@ fasta: ../../genome/S_cerevisiae.R64-2-1.fa
 
 samples:
     doris-1:
-        path: ../../tss-seq/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bedgraph
+        path: ../../tss-seq-publication/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bedgraph
+        bw: ../../tss-seq-publication/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bw
         group: doris
-        bw: ../../tss-seq/coverage/libsizenorm/WT-37C-1_tss-seq-libsizenorm-SENSE.bw
     doris-2:
-        path: ../../tss-seq/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bedgraph
+        path: ../../tss-seq-publication/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bedgraph
+        bw: ../../tss-seq-publication/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bw
         group: doris
-        bw: ../../tss-seq/coverage/libsizenorm/WT-37C-2_tss-seq-libsizenorm-SENSE.bw
     # viktorovskaya-1:
     #     path: ../../viktorovskaya-tss-seq/coverage/libsizenorm/ov-WT-30C-1_tss-seq-libsizenorm-SENSE.bedgraph
     #     group: viktorovskaya
@@ -38,7 +38,7 @@ samples:
 
 annotations:
     verified-transcripts:
-        path : ../../genome/annotations/Scer_transcripts_w_verifiedORFs.bed
+        path : ../../genomefiles_cerevisiae/annotations/Scer_transcripts_w_verifiedORFs.bed
         binsize : 10
         binstat : "max" # OPTIONS: mean, median, min, max, sum, std
         scaled-length: 2000
