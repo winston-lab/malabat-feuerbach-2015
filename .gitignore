@@ -1,5 +1,4 @@
 .snakemake/
-data/*
 !data/.gitkeep
 reformatted/
 figures/
@@ -14,3 +13,4 @@ logs/cluster/*
 !logs/cluster/.gitkeep
 Rplots.pdf
 annotations/
+mogrify.log
