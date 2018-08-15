@@ -1,9 +1,9 @@
 
-# analysis of [Malabat, Feuerbach *et al*., 2015](https://elifesciences.org/articles/06722)
+# analysis of [Malabat, Feuerbach *et al*., 2015](https://doi.org/10.7554/eLife.06722)
 
 ## description
 
-Code used to compare the TSS-seq data from [our preprint](https://www.biorxiv.org/content/early/2018/06/15/347575) to TSS-seq data from [Malabat, Feuerbach *et al.*, 2015](https://elifesciences.org/articles/06722). To reproduce the results from our paper, use the archived version of this analysis from [Zenodo](https://doi.org/10.5281/zenodo.1325930).
+Code used to compare the TSS-seq data from [our preprint](https://doi.org/10.1101/347575) to TSS-seq data from [Malabat, Feuerbach *et al.*, 2015](https://doi.org/10.7554/eLife.06722). To reproduce the results from our paper, use the archived version of this analysis from [Zenodo](https://doi.org/10.5281/zenodo.1325930).
 
 ## requirements
 
