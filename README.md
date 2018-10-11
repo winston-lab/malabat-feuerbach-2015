@@ -3,7 +3,7 @@
 
 ## description
 
-Code used to compare the TSS-seq data from [our preprint](https://doi.org/10.1101/347575) to TSS-seq data from [Malabat, Feuerbach *et al.*, 2015](https://doi.org/10.7554/eLife.06722). To reproduce the results from our paper, use the archived version of this analysis from [Zenodo](https://doi.org/10.5281/zenodo.1325930).
+Code used to compare the TSS-seq data from our [2018 Spt6 publication](https://doi.org/10.1016/j.molcel.2018.09.005) to TSS-seq data from [Malabat, Feuerbach *et al.*, 2015](https://doi.org/10.7554/eLife.06722). To reproduce the results from our paper, use the archived version of this analysis from [Zenodo](https://doi.org/10.5281/zenodo.1409826).
 
 ## requirements
 
